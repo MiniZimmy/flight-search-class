@@ -1,0 +1,19 @@
+@import "variables";
+
+header {
+  display: block;
+  background-color: $header-background-color;
+  nav {
+    background-color: $header-background-color;
+    color: white;
+    .header-content {
+      display: flex;
+      justify-content: center;
+      img {
+        width: 100px;
+        margin-top: -30px;
+        margin-bottom: -45px;
+      }
+    }
+  }
+}
