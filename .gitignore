@@ -5,6 +5,9 @@
 /tmp
 /out-tsc
 
+# hidden env variables
+/src/environments/environment.common.ts
+
 # dependencies
 /node_modules
 
