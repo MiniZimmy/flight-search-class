@@ -1,3 +1,17 @@
+
+@import '~@angular/material/theming';
+
+@include mat-core();
+
+$flight-search-primary: mat-palette($mat-orange);
+$flight-search-accent: mat-palette($mat-blue-grey, A200, A100, A400);
+
+$flight-search-warn: mat-palette($mat-red);
+
+$flight-search-theme: mat-light-theme($flight-search-primary, $flight-search-accent, $flight-search-warn);
+
+@include angular-material-theme($flight-search-theme);
+
 @import "variables";
 
 html {
@@ -16,3 +30,5 @@ html {
     }
   }
 }
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

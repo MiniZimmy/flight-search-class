@@ -43,7 +43,7 @@ Cette fonction accepte plusieurs propriétés en paramètre, les plus importante
 - `styles`/`styleUrls`: Styles to be applied to the component's view or Urls to the stylesheets
 
 Le composant search devient donc tout simplement:
-```
+```typescript
 import {Component} from '@angular/core';
 @Component({
   selector: 'app-search',
@@ -66,7 +66,7 @@ Ses propriétés principales sont les suivantes: ([doc](https://angular.io/api/c
 - `bootstrap`: Seulement utilisé par le root module, pour définir le root component
 
 Le `searchModule` ne fait donc que déclarer le `searchComponent` dans un premier temps:
-```
+```typescript
 import {NgModule} from '@angular/core';
 import {SearchComponent} from './search.component';
 
@@ -94,7 +94,7 @@ L'objet `routes` contiendra toutes nos routes. Toutes les propriétés de l'obje
 On choisit de "lazy load" nos pages - le module `SearchModule` ne sera loadé que si la page `search` est affichée. La propriété `loadChildren` nous permet de spécifier seulement le chemin vers le module qui définira le composant a charger grace à la fonction `forChild` du `RouterModule`.
 
 `app-routing.module.ts`:
-```
+```typescript
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
@@ -117,7 +117,7 @@ export class AppRoutingModule { }
 
 Comme on l'a dit plus haut, il faut maintenant définir dans le `searchModule` le composant à loader quand la page est demandée:
 `search.module.ts`:
-```
+```typescript
 import {NgModule} from '@angular/core';
 import {RouterModule} from '@angular/router';
 import {SearchComponent} from './search.component';
@@ -131,3 +131,126 @@ import {SearchComponent} from './search.component';
 })
 export class SearchModule {}
 ```
+
+## Creation d'un service: FlightService
+
+### Injectable decorator
+
+Comme pour les Components et NgModules, on va utiliser un décorateur pour définir un service: `@Injectable` ([doc](https://angular.io/api/core/Injectable#injectable)).
+
+```typescript
+import { Injectable } from '@angular/core';
+@Injectable()
+export class FlightService {
+  constructor() {}
+}
+```
+
+```typescript
+import { NgModule } from '@angular/core';
+import { FlightService } from './flight.service';
+@NgModule({
+  imports: [
+  ],
+  providers: [
+    FlightService
+  ]
+})
+export class FlightServiceModule {}
+```
+
+Ajouter le décorateur `@Injectable` à la classe de notre service et l'ajouter dans la liste des `providers` de son module permet de bénéficier de l'[injection de dépendance](https://angular.io/guide/dependency-injection#dependency-injection-in-angular). Une (unique - singleton pattern) instance de ce service sera créée et mise à disposition des composants qui en ont besoin. Pour utiliser un service, il faut dont que le module de ce dernier soit déjà importé (pour que le service soit mis à disposition) et que le service soit **injecté** dans le `constructor` du composant qui veut l'utiliser.
+
+Ainsi on ajoute `FlightServiceModule` à la liste des imports dans les modules oú on veut l'utiliser et on injecte le `FlightService` dans le constructeur du composant ou on va utiliser le service: `constructor(private flightService: FlightService)`.
+
+### Utilisation du service
+
+Afin de faciliter la création des futures fonctions du service, la première fonction permettant de récupérer les `flight-offers` a été créée, appelée dans le composant et son résultat a été affiché directement dans la page.
+La nouvelle fonction `getFlightOffers` retourne un [Observable](https://angular.io/guide/observables) de `FlightOffersResponse` retourné par la fonction `Http.get` et prend en paramètre un objet de type `FlightOffersRequest`. Ces deux objets sont des interfaces définies dans `src/app/models`.
+Pour utiliser `getFlightOffers` dans `SearchComponent`, il faut importer le `FlightServiceModule` dans le `SearchModule` et l'ajouter au constructeur de `SearchComponent`:
+```typescript
+export class SearchComponent implements OnInit {
+  public search: Observable<FlightOffersResponse>;
+  constructor(private flightService: FlightService) {
+  }
+  ngOnInit() {
+    this.search = this.flightService.getFlightOffers({
+      origin: 'CDG',
+      destination: 'LON',
+      departureDate: new Date('2019-06-06')
+    });
+  }
+}
+```
+Le résultat est stocké dans la variable pulique `search` et utilisée dans le template: `{{search | async | json}}`. On utilise ici deux `Pipes` définis par Angular:
+- [JsonPipe](https://angular.io/api/common/JsonPipe): Affiche un objet dans le template (afficherait [Object object] sinon).
+- [AsyncPipe](https://angular.io/api/common/AsyncPipe): S'abonne à un Observable pour en retourner les valeurs émises.
+
+Ainsi `| async | json` permet de récupérer la valeur extraite de l'Observable puis de la transformer en JSON pour l'afficher dans le template.
+
+## Flight offer search
+
+### Création du composant
+
+Le but de ce nouveau composant sera de créer un objet respectant l'interface `FlightOffersRequest` créée à partir de [flight-offer (Low-fare search)](https://developers.amadeus.com/self-service/category/203/api-doc/4/api-docs-and-example/10002).
+Créez le composant `flight-offer-search` avec le décorateur `@Component` comme présenté plus haut.
+
+Pour ce formulaire, il faut au minimum deux `input`s de type text pour `origin` et `destination` et un input de type `date` pour la `departureDate`. Des [inputs HTML classiques](https://www.w3schools.com/tags/tag_input.asp) feraient l'affaire mais j'ai ajouté `@angular/material` au projet que vous pouvez aussi utiliser. Pour les utiliser, rien de plus simple, il suffit de choisir le [composant](https://material.angular.io/components/categories/forms) dont vous avez besoin, importer son module ([Indiqué ici pour l'input classique par exemple](https://material.angular.io/components/input/api)) et utiliser le tag correspondant comme montré dans les examples.
+
+### Formulaires et data binding
+
+Une fois le template prêt, il faut lier les données du formulaire à un objet de type `FlightOffersRequest` du composant afin d'appeler la fonction du service.
+Il éxiste deux principales façons de créer des formulaires avec Angular:
+- [Reactive forms](https://angular.io/guide/reactive-forms)
+- [Template driven forms](https://angular.io/guide/forms#template-driven-forms)
+
+Pour ce cours, on utilisera les template driven forms, plus facile à comprendre pour commencer les forms avec Angular, d'autant plus que les Reactive forms se basent sur les Observables.
+Pour le template driven form, vous utiliserez la directive [`ngModel`](https://angular.io/guide/forms#two-way-data-binding-with-ngmodel) afin de lier le composant et template (La directive `ngForm` comme présentée dans la doc à la suite du `ngModel` permet notamment de gérer la validité du form).
+). Il éxiste plusieurs types de binding mis à disposition par Angular - toutes détaillées [ici (sections template syntax et Forms)](https://angular.io/guide/cheatsheet).
+Pour cette section il vous faudra donc:
+- Créer le composant - le lier au template et à la feuille de style avec le décorateur `Component`.
+- Créer le template et son style
+- Déclarer et exporter votre composant dans le nouveau module
+- Important et utiliser votre nouveau composant dans la page `search`
+- Initialiser votre modèle dans le composant
+- Lier les valeurs du template à votre modèle grâce à la directive `[(ngModel)]`.
+- Ajouter un bouton et appeler la `getFlightOffers()` lorsque l'utilisateur clique dessus. Un autre style de binding est nécessaire ici: Il faut écouter l'évèvement click: `(click)="functionToCall()"`.
+- Enfin, pour vérifier que l'appel à la fonction fonctionne, affichez le résultat de l'appel dans le template avec les pipes `async` et `json` comme présenté dans la page `search`.
+
+Bouts de codes si besoin:
+Intialisation du modèle:
+```typescript
+public model = {
+  origin: '',
+  destination: '',
+  departureDate: undefined,
+  returnDate: undefined
+};
+```
+Template (Sans binding):
+```HTML
+  <form class="row no-gutters form-content">
+    <mat-form-field appearance="fill" class="col-12 col-md-6 px-md-2">
+      <mat-label>Origin</mat-label>
+      <input matInput type="text" name="origin">
+    </mat-form-field>
+    <mat-form-field appearance="fill" class="col-12 col-md-6 px-md-2">
+      <mat-label>Destination</mat-label>
+      <input matInput type="text" name="destination">
+    </mat-form-field>
+    <mat-form-field class="col-12 col-md-6 px-md-2">
+      <input matInput [matDatepicker]="departureDatePicker" placeholder="Departure date" name="departure-date">
+      <mat-datepicker-toggle matSuffix [for]="departureDatePicker"></mat-datepicker-toggle>
+      <mat-datepicker [startAt]="minDate" startView="month" #departureDatePicker></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field class="col-12 col-md-6 px-md-2">
+      <input matInput [matDatepicker]="returnDatePicker" placeholder="Return date" name="return-date">
+      <mat-datepicker-toggle matSuffix [for]="returnDatePicker"></mat-datepicker-toggle>
+      <mat-datepicker startView="month" #returnDatePicker></mat-datepicker>
+    </mat-form-field>
+    <div class="button-container col-12 col-md-6 mt-3 px-md-2 ml-auto">
+      <button mat-stroked-button class="button continue w-100">Search</button>
+    </div>
+  </form>
+```
+Bonus: Activer le bouton `Search` seulement si les champs `origin`, `destination` et `departureDate` sont remplis - étant donné qu'ils sont obligatoires pour la requête des `flight-offers`.
