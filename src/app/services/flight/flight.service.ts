@@ -61,7 +61,7 @@ export class FlightService {
   }
 
   private computeValue(key, value) {
-    if (key === 'departureDate') {
+    if (key === 'departureDate' || key === 'returnDate') {
       return value.toISOString().split('T')[0];
     }
     return value;

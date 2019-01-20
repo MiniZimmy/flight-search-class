@@ -27,4 +27,4 @@
   </form>
 </div>
 
-{{flightOffers | async | json}}
+<app-flight-offers [flightOffers]="flightOffers | async"></app-flight-offers>

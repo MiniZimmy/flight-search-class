@@ -1,0 +1,34 @@
+@import "variables";
+
+.flight-offers {
+  display: block;
+  background-color: white;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  padding: .4rem;
+  margin-top: .6rem;
+  margin-bottom: .6rem;
+  .title {
+    padding: .6rem;
+    color: $site-primary-color;
+  }
+
+  .offer {
+    display: flex;
+    padding: .8rem;
+    &:not(:last-of-type) {
+      border-bottom: 1px solid gray;
+    }
+    .flight-code {
+      padding-right: .8rem;
+    }
+    .offer-item {
+      justify-content: space-between;
+      .flight-details {
+        display: flex;
+        .flight-divider {
+          padding: 0 5px;
+        }
+      }
+    }
+  }
+}

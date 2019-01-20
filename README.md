@@ -281,3 +281,23 @@ Le but de cette partie est donc d'afficher la liste des vols retourés par l'api
 - [*ngFor](https://angular.io/api/common/NgForOf): Crée une instance du template pour chaque élément du tableau fourni en input.
 
 L'idéal pour ce composant est d'afficher, pour chaque vol, le numéro de vol, les différents aéroports traversés et le prix total.
+
+## Autocomplétion Ville et/ou aéroport
+
+Dans cette partie, il faudra créer le service et modifier les inputs afin de rechercher les villes et aéroport correspondant à ce que l'utilisateur est en train de taper. Dans son [tutoriel](https://angular.io/tutorial/toh-pt6#search-by-name), Angular montre une implémentation équivalente de cette fonctionnalité dont vous pourrez vous inspirer.
+
+### Airport & City Search service
+
+Il faut dans un premier temps créer le service permettant d'appeler l'[API](https://developers.amadeus.com/self-service/category/203/api-doc/10/api-docs-and-example/10008).
+Comme pour `getFlightOffers`, il faut utiliser le token pour faire la requête. La fonction éxistante `getToken` renvoie un observable émettant la valeur du token. La fonction [`switchMap`](https://www.learnrxjs.io/operators/transformation/switchmap.html) utilisée dans `getFlightOffers` permet de renvoyer un nouvel observable à chaque fois qu'une valeur du premier Observable est émise. [Rxjs Marble](https://rxmarbles.com/#switchMap) aide souvent à mieux comprendre le fonctionnement des opérateurs sur les observables.
+
+### Modification du composant
+
+Il faut maintenant appeler cette fonction à chaque fois (ou presque) que l'utilisateur modifie un input `origin` ou `destination`.
+[Subject](http://reactivex.io/rxjs/class/es6/Subject.js~Subject.html) est à la fois `Observable` et `Observer`, ce qui veut dire qu'on peut s'y abonner comme on le ferait avec un Observable mais on peut aussi y injecter des valeurs avec la fonction `next`. Il nous servira pour pousser chaque changement fait dans l'input et s'y abonner pour appeler la fonction du service afin de récupérer les suggestions.
+Les étapes à suivre sont les suivantes:
+- Créer le `Subject`
+- Ecouter les changements de l'input (output `ngModelChange`)
+- "Pousser" chaque valeur dans le `Subject` (fonction `next`)
+- "Chainer" l'appel au service à chaque fois qu'une valeur est émise (fonction `pipe`, puis opérateur `switchMap` pour émettre un nouvel Observable - Comme dans le tuto Angular, il est conseillé d'ajouter `debounceTime` et `distinctUntilChanged` pour ne pas flooder le serveur)
+- Utiliser `mat-autocomplete` pour afficher les valeurs retournées par l'api
