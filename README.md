@@ -254,3 +254,30 @@ Template (Sans binding):
   </form>
 ```
 Bonus: Activer le bouton `Search` seulement si les champs `origin`, `destination` et `departureDate` sont remplis - étant donné qu'ils sont obligatoires pour la requête des `flight-offers`.
+
+## Flight offer results
+
+Les résultats sont maintenant affichés en JSON directement dans le template. Le but de cette partie est de créer un composant pour afficher les résultats et qui viendra remplacer `{{flightOffers | async | json}}`.
+
+### Affichage du JSON dans le nouveau composant
+
+Pour cette partie, il faudra donc:
+- Créer un nouveau dossier `flight-offers` dans `src/app/components` pour accueillir les fichiers nécessaires au nouveau composant: module, composant, template, feuille de style, et barrel file si vous le souhaitez
+- Importer le module du nouveau composant dans le composant `flightOfferSearch` et utiliser le nouveau tag `<app-flight-offers>` dans template.
+- Passer les résultat au composant `FlightOffersComponent`. Pour cela, il faut utiliser un autre décorateur [`@Input`](https://angular.io/api/core/Input). Il permet de définir un nouvel attribut à votre composant pour lui passer les informations dont il a besoin:
+```typescript
+@Input()
+flightOffers?: FlightOffersResponse;
+```
+```HTML
+<app-extensive-flight-results [extensiveFlightSearch]="extensiveFlightSearch$ | async"></app-extensive-flight-results>
+```
+- Afficher l'objet passé en input grace au `JsonPipe`.
+
+### Création du template pour afficher les résultats
+
+Le but de cette partie est donc d'afficher la liste des vols retourés par l'api. Pour cela, vous aurez besoin de quelques directives mises à disposition par Angular:
+- [*ngIf](https://angular.io/api/common/NgIf): Affiche le template en fonction de la valeur de l'expression donnée
+- [*ngFor](https://angular.io/api/common/NgForOf): Crée une instance du template pour chaque élément du tableau fourni en input.
+
+L'idéal pour ce composant est d'afficher, pour chaque vol, le numéro de vol, les différents aéroports traversés et le prix total.

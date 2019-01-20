@@ -1,0 +1,30 @@
+<div class="flight-offer-search">
+  <h1>Extensive Flight Search</h1>
+  <form #form="ngForm" class="row no-gutters form-content">
+    <mat-form-field appearance="fill" class="col-12 col-md-6 px-md-2">
+      <mat-label>Origin</mat-label>
+      <input matInput required="true" type="text" name="origin" [(ngModel)]="model.origin">
+    </mat-form-field>
+    <mat-form-field appearance="fill" class="col-12 col-md-6 px-md-2">
+      <mat-label>Destination</mat-label>
+      <input matInput required="true" type="text" name="destination" [(ngModel)]="model.destination">
+    </mat-form-field>
+    <mat-form-field class="col-12 col-md-6 px-md-2">
+      <input matInput [matDatepicker]="departureDatePicker" placeholder="Departure date"
+        [(ngModel)]="model.departureDate" required name="departure-date" [min]="minDate">
+      <mat-datepicker-toggle matSuffix [for]="departureDatePicker"></mat-datepicker-toggle>
+      <mat-datepicker [startAt]="minDate" startView="month" #departureDatePicker></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field class="col-12 col-md-6 px-md-2">
+      <input matInput [matDatepicker]="returnDatePicker" placeholder="Return date"
+        [(ngModel)]="model.returnDate" name="return-date">
+      <mat-datepicker-toggle matSuffix [for]="returnDatePicker"></mat-datepicker-toggle>
+      <mat-datepicker startView="month" #returnDatePicker></mat-datepicker>
+    </mat-form-field>
+    <div class="button-container col-12 col-md-6 mt-3 px-md-2 ml-auto">
+      <button mat-stroked-button [disabled]="!form.valid" class="button continue w-100" (click)="search()">Search</button>
+    </div>
+  </form>
+</div>
+
+{{flightOffers | async | json}}

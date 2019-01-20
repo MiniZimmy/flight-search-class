@@ -4,8 +4,8 @@ import { switchMap } from 'rxjs/operators';
 
 import {FlightOffersRequest, FlightOffersResponse} from '../../models';
 import {environment} from '../../../environments/environment';
-import {of as observableOf} from 'rxjs';
-import {tap} from 'rxjs/operators';
+import {of as observableOf, Subject} from 'rxjs';
+import {map, tap} from 'rxjs/operators';
 
 @Injectable()
 export class FlightService {
@@ -33,9 +33,10 @@ export class FlightService {
       tap((response) => {
         if (response && response.access_token) {
           this.token = response.access_token;
-          this.expiresAt = Date.now() + response.expires_in;
+          this.expiresAt = Date.now() + response.expires_in * 1000;
         }
-      })
+      }),
+      map((response) => response.access_token)
     );
   }
 
@@ -44,9 +45,8 @@ export class FlightService {
       return true;
     } else if ((Date.now() + 10) > this.expiresAt) {
       return true;
-    } else {
-      return false;
     }
+    return false;
   }
 
   private getToken() {
@@ -76,9 +76,9 @@ export class FlightService {
   // Flight Low-fare Search
   public getFlightOffers(data: FlightOffersRequest) {
     return this.getToken().pipe(
-      switchMap((response) => this.http.get<FlightOffersResponse>(this.url + 'flight-offers', {
+      switchMap((token) => this.http.get<FlightOffersResponse>(this.url + 'flight-offers', {
         headers: {
-          Authorization: `Bearer ${response.access_token}`
+          Authorization: `Bearer ${token}`
         },
         params: this.buildRequestParams(data)
       }))

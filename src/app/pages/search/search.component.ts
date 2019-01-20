@@ -1,7 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
 import {FlightOffersResponse} from '../../models';
-import { FlightService } from '../../services/flight';
 
 @Component({
   selector: 'app-search',
@@ -12,16 +11,9 @@ export class SearchComponent implements OnInit {
 
   public search: Observable<FlightOffersResponse>;
 
-  constructor(private flightService: FlightService) {
+  constructor() {
   }
 
-  ngOnInit() {
-    this.search = this.flightService.getFlightOffers({
-      origin: 'CDG',
-      destination: 'LON',
-      departureDate: new Date('2019-02-02'),
-      max: 3
-    });
-  }
+  ngOnInit() {}
 
 }

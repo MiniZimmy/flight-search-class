@@ -4,6 +4,7 @@ header {
   display: block;
   background-color: $header-background-color;
   nav {
+    padding: 25px 1rem !important;
     background-color: $header-background-color;
     color: white;
     .header-content {
