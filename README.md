@@ -301,3 +301,14 @@ Les étapes à suivre sont les suivantes:
 - "Pousser" chaque valeur dans le `Subject` (fonction `next`)
 - "Chainer" l'appel au service à chaque fois qu'une valeur est émise (fonction `pipe`, puis opérateur `switchMap` pour émettre un nouvel Observable - Comme dans le tuto Angular, il est conseillé d'ajouter `debounceTime` et `distinctUntilChanged` pour ne pas flooder le serveur)
 - Utiliser `mat-autocomplete` pour afficher les valeurs retournées par l'api
+
+## Refactoring search page and component
+
+Pour le moment le composant `flight-offer-search` importe et utilise lui même le composant `flight-offers`. Pour séparer au mieux les composants et les rendre plus facilement ré-utilisables, il est conseillé de les séparer si ils n'ont pas la même fonction. Par éxemple, on peut vouloir afficher le formulaire sans afficher les résultats juste en dessous, mais plutot dans une page séparée.
+La page search sera alors responsable de faire la recherche avec les données que lui passe le formulaire grâce au décorateur [`@Output`](https://angular.io/api/core/Output).
+
+Pour cette partie il faudra:
+- Définir l'`@Output()` dans flight search component et l'émettre quand on clique sur le bouton
+- Supprimer le `FlightOfferComponent` du template et des imports de `flightOfferSearch`
+- Ecouter le nouvel évenement dans la page `search` - comme on le ferait pour un `click` - et appeler le service quand il est émit
+- Ajouter le `flightOfferComponent` directement dans la page.

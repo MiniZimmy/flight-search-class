@@ -12,6 +12,7 @@ export class FlightService {
 
   private securityUrl = environment.apiUrl + 'security/oauth2/token';
   private url = environment.apiUrl + 'shopping/';
+  private autocompleteUrl = environment.apiUrl + 'reference-data/';
 
   private token?: string;
   private expiresAt?: number;
@@ -81,6 +82,30 @@ export class FlightService {
           Authorization: `Bearer ${token}`
         },
         params: this.buildRequestParams(data)
+      }))
+    );
+  }
+
+  private buildAutoCompleteParams(text: string) {
+    let params = new HttpParams();
+    params = params.set('subType', 'AIRPORT,CITY');
+    params = params.set('keyword', text);
+    params = params.set('page[limit]', '5');
+    params = params.set('view', 'LIGHT');
+    return params;
+  }
+
+  // Airport & City Search
+  public getAirportOrCity(text: string) {
+    if (!text || !text.length) {
+      return;
+    }
+    return this.getToken().pipe(
+      switchMap((token) => this.http.get<any>(this.autocompleteUrl + 'locations', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        params: this.buildAutoCompleteParams(text)
       }))
     );
   }

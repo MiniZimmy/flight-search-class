@@ -3,11 +3,23 @@
   <form #form="ngForm" class="row no-gutters form-content">
     <mat-form-field appearance="fill" class="col-12 col-md-6 px-md-2">
       <mat-label>Origin</mat-label>
-      <input matInput required="true" type="text" name="origin" [(ngModel)]="model.origin">
+      <input matInput required="true" type="text" name="origin"
+             (ngModelChange)="originInputChange($event)" [(ngModel)]="model.origin" [matAutocomplete]="origin">
+      <mat-autocomplete #origin="matAutocomplete">
+        <mat-option *ngFor="let option of (originOptions$ | async)" [value]="option.iataCode">
+          {{option.iataCode}} - {{option.name}} ({{option.address.cityName}})
+        </mat-option>
+      </mat-autocomplete>
     </mat-form-field>
     <mat-form-field appearance="fill" class="col-12 col-md-6 px-md-2">
       <mat-label>Destination</mat-label>
-      <input matInput required="true" type="text" name="destination" [(ngModel)]="model.destination">
+      <input matInput required="true" type="text" name="destination"
+             (ngModelChange)="destinationInputChange($event)" [(ngModel)]="model.destination" [matAutocomplete]="destination">
+      <mat-autocomplete #destination="matAutocomplete">
+        <mat-option *ngFor="let option of (destinationOptions$ | async)" [value]="option.iataCode">
+          {{option.iataCode}} - {{option.name}} ({{option.address.cityName}})
+        </mat-option>
+      </mat-autocomplete>
     </mat-form-field>
     <mat-form-field class="col-12 col-md-6 px-md-2">
       <input matInput [matDatepicker]="departureDatePicker" placeholder="Departure date"

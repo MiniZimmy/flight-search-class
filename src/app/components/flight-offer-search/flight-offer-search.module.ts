@@ -1,7 +1,7 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
-import {MatInputModule, MatDatepickerModule, MatNativeDateModule, MatButtonModule} from '@angular/material';
+import {MatInputModule, MatDatepickerModule, MatNativeDateModule, MatButtonModule, MatAutocompleteModule} from '@angular/material';
 import {FlightServiceModule} from '../../services/flight';
 import {FlightOffersModule} from '../flight-offers';
 import {FlightOfferSearchComponent} from './flight-offer-search.component';
@@ -12,7 +12,7 @@ import {FlightOfferSearchComponent} from './flight-offer-search.component';
     FlightServiceModule,
     FormsModule,
     MatInputModule,
-    MatDatepickerModule, MatNativeDateModule,
+    MatDatepickerModule, MatNativeDateModule, MatAutocompleteModule,
     MatButtonModule, FlightOffersModule
   ],
   declarations: [FlightOfferSearchComponent],
