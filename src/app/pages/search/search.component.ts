@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {Observable} from 'rxjs';
-import {FlightOffersResponse} from '../../models';
+import {FlightOffersRequest, FlightOffersResponse} from '../../models';
+import {FlightService} from '../../services/flight';
 
 @Component({
   selector: 'app-search',
@@ -9,11 +10,15 @@ import {FlightOffersResponse} from '../../models';
 })
 export class SearchComponent implements OnInit {
 
-  public search: Observable<FlightOffersResponse>;
+  public flightOffers: Observable<FlightOffersResponse>;
 
-  constructor() {
+  constructor(private flightService: FlightService) {
   }
 
   ngOnInit() {}
+
+  public onSearch(model: FlightOffersRequest) {
+    this.flightOffers = this.flightService.getFlightOffers(model);
+  }
 
 }

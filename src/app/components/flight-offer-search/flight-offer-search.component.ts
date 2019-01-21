@@ -1,8 +1,8 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {Observable, Subject} from 'rxjs';
 import {debounceTime, distinctUntilChanged, switchMap, map} from 'rxjs/operators';
 import {FlightService} from '../../services/flight';
-import {FlightOffersResponse} from '../../models';
+import {FlightOffersRequest} from '../../models';
 
 @Component({
   selector: 'app-flight-offer-search',
@@ -11,6 +11,8 @@ import {FlightOffersResponse} from '../../models';
 })
 export class FlightOfferSearchComponent implements OnInit {
 
+  @Output() search: EventEmitter<FlightOffersRequest> = new EventEmitter<FlightOffersRequest>();
+
   public model = {
     origin: '',
     destination: '',
@@ -18,7 +20,7 @@ export class FlightOfferSearchComponent implements OnInit {
     returnDate: undefined
   };
 
-  public flightOffers: Observable<FlightOffersResponse>;
+  // public flightOffers: Observable<FlightOffersResponse>;
 
   public originSubject$: Subject<string> = new Subject<string>();
   public destinationSubject$: Subject<string> = new Subject<string>();
@@ -51,7 +53,7 @@ export class FlightOfferSearchComponent implements OnInit {
     this.destinationSubject$.next(text);
   }
 
-  public search() {
-    this.flightOffers = this.flightService.getFlightOffers(this.model);
+  public onSearch() {
+    this.search.emit(this.model);
   }
 }

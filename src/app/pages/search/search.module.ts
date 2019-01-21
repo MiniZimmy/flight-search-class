@@ -3,13 +3,16 @@ import {NgModule} from '@angular/core';
 import {RouterModule} from '@angular/router';
 
 import {SearchComponent} from './search.component';
-import {FlightOfferSearchModule} from '../../components';
+import {FlightOfferSearchModule, FlightOffersModule} from '../../components';
+import {FlightServiceModule} from '../../services/flight';
 
 @NgModule({
   imports: [
     RouterModule.forChild([{path: '', component: SearchComponent}]),
     CommonModule,
-    FlightOfferSearchModule
+    FlightServiceModule,
+    FlightOfferSearchModule,
+    FlightOffersModule
   ],
   declarations: [SearchComponent],
   exports: [],

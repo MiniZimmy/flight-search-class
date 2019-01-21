@@ -34,9 +34,7 @@
       <mat-datepicker startView="month" #returnDatePicker></mat-datepicker>
     </mat-form-field>
     <div class="button-container col-12 col-md-6 mt-3 px-md-2 ml-auto">
-      <button mat-stroked-button [disabled]="!form.valid" class="button continue w-100" (click)="search()">Search</button>
+      <button mat-stroked-button [disabled]="!form.valid" class="button continue w-100" (click)="onSearch()">Search</button>
     </div>
   </form>
 </div>
-
-<app-flight-offers [flightOffers]="flightOffers | async"></app-flight-offers>
